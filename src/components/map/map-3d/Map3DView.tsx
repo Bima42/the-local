@@ -2,9 +2,9 @@
 
 import { useCallback, useState } from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { Map3D, Marker3D } from "./map-3d";
-import { LocationSidebar } from "./LocationSidebar";
-import type { Map3DCameraProps } from "./map-3d";
+import { Map3D, Marker3D } from ".";
+import { LocationSidebar } from "./LocationSidebar3D";
+import type { Map3DCameraProps } from ".";
 import type { MapPosition } from "@/server/types/Map";
 import { env } from "@/config/env";
 
