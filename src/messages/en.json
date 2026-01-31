@@ -1,8 +1,9 @@
 {
     "Hero": {
-      "title": "Landing Page Boilerplate",
-      "subtitle": "Please edit this content to build your amazing landing page",
-      "description": "This is a Next.js 16 boilerplate with React 19, Tailwind CSS v4, TypeScript, and next-intl for internationalization."
+      "title": "Beaverly Health",
+      "subtitle": "Your body, mapped.",
+      "description": "Track, visualize, and share what you feel — so the right people can help.",
+      "cta": "Start a session"
     },
     "LanguageSwitcher": {
       "changeLanguage": "Language"

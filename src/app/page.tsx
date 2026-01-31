@@ -11,17 +11,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen">
-      <Hero />
-      <div className="flex items-center justify-center py-12">
-        <form action={createSession}>
-          <button
-            type="submit"
-            className="bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity"
-          >
-            Commencer une nouvelle session
-          </button>
-        </form>
-      </div>
+      <Hero createSession={createSession} />
     </main>
   );
 }
