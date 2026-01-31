@@ -15,6 +15,12 @@ node_modules
 
 openapi.json
 
+# python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
 # Testing
 coverage
 
