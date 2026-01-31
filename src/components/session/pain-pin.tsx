@@ -20,7 +20,7 @@ export function PainPin({ point, isSelected }: Props) {
     point.posZ,
   ];
 
-  const showLabel = isSelected || isHovered;
+  // const showLabel = isSelected || isHovered;
 
   return (
     <group position={position}>
@@ -42,7 +42,7 @@ export function PainPin({ point, isSelected }: Props) {
       </mesh>
 
       {/* Label overlay - show on hover or selection */}
-      {showLabel && (
+      {/* {showLabel && (
         <Html
           position={[0, 0.08, 0]}
           center
@@ -54,7 +54,7 @@ export function PainPin({ point, isSelected }: Props) {
             {point.label || "Sans titre"}
           </div>
         </Html>
-      )}
+      )} */}
     </group>
   );
 }
