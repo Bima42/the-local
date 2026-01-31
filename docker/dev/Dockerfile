@@ -1,27 +1,30 @@
-# Use Node.js 20 Alpine for minimal size
+# docker/next/dev/Dockerfile
 FROM node:20-alpine
 
-# Create a non-root user and its home directory
-# This avoids permission issues and is a security best practice
-RUN adduser -D -s /bin/sh next && \
-    mkdir -p /home/next/app && \
-    chown -R next:next /home/next/app
+# Install psql client to wait for the database to be ready
+RUN apk add --no-cache postgresql-client
+
+# Create a non-root user and its home directory, same as original codebase
+RUN adduser -D -s /bin/sh next
+RUN mkdir -p /home/next/app
+RUN chown -R next:next /home/next/app
 
 # Set the working directory
 WORKDIR /home/next/app
 
-# Copy package files first (better layer caching)
-# Change ownership to next user
+# Copy package files and install dependencies
+# This leverages Docker's layer caching
 COPY --chown=next:next package*.json ./
-
-# Install dependencies as root (for write permissions)
 RUN npm install
 
-# Switch to the non-root user for running the app
+# Switch to the non-root user
 USER next
 
-# Expose the dev server port
-EXPOSE 3000
+# Copy the rest of the application code
+COPY --chown=next:next ./src/ /home/next/app/
 
-# Start the development server with hot reload
-CMD ["npm", "run", "dev"]
+# Copy the entrypoint script and make it executable
+COPY --chown=next:next ./docker/dev/entrypoint.sh /entrypoint
+RUN chmod +x /entrypoint
+
+ENTRYPOINT ["/entrypoint"]
