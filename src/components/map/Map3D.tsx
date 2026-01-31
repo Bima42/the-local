@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import { useApiIsLoaded } from "@vis.gl/react-google-maps";
-import { type Map3DProps } from "@/server/types/Map";
+import { type Map3DProps, type MapPosition } from "@/server/types/Map";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_TILT = 67.5;
@@ -13,6 +13,7 @@ const DEFAULT_MODE = "HYBRID";
 /**
  * 3D Map component using Google's Map3DElement (beta).
  * 
+ * Supports displaying 3D markers at geographic coordinates.
  * Uses vis.gl's APIProvider for loading, but creates the 3D map
  * instance directly since vis.gl doesn't have a 3D wrapper yet.
  */
@@ -22,10 +23,12 @@ export function Map3D({
   heading = DEFAULT_HEADING,
   range = DEFAULT_RANGE,
   mode = DEFAULT_MODE,
+  markers = [],
   className,
 }: Map3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.maps3d.Map3DElement | null>(null);
+  const markersRef = useRef<google.maps.maps3d.Marker3DElement[]>([]);
   const apiIsLoaded = useApiIsLoaded();
 
   const initializeMap = useCallback(async () => {
@@ -35,9 +38,7 @@ export function Map3D({
     if (mapRef.current) return;
 
     try {
-      const { Map3DElement } = (await google.maps.importLibrary(
-        "maps3d"
-      )) as { Map3DElement: typeof google.maps.maps3d.Map3DElement };
+      const { Map3DElement } = await google.maps.importLibrary("maps3d");
 
       const map = new Map3DElement({
         center: {
@@ -49,7 +50,6 @@ export function Map3D({
         heading,
         range,
         mode,
-        // gestureHandling: "greedy",
       });
 
       containerRef.current.appendChild(map);
@@ -59,15 +59,75 @@ export function Map3D({
     }
   }, [center.lat, center.lng, center.altitude, tilt, heading, range, mode]);
 
+  /**
+   * Synchronizes markers with the map when markers prop changes.
+   * Clears existing markers and creates new ones.
+   */
+  const syncMarkers = useCallback(async () => {
+    if (!mapRef.current || !apiIsLoaded) return;
+
+    try {
+      // Clear existing markers
+      markersRef.current.forEach((marker) => {
+        try {
+          marker.remove();
+        } catch (error) {
+          console.warn("Error removing marker:", error);
+        }
+      });
+      markersRef.current = [];
+
+      // Add new markers
+      const { Marker3DElement } = await google.maps.importLibrary("maps3d");
+
+      markers.forEach((position: MapPosition) => {
+        try {
+          const marker = new Marker3DElement({
+            position: {
+              lat: position.lat,
+              lng: position.lng,
+              altitude: position.altitude ?? 0,
+            },
+            label: position.label ?? "",
+            altitudeMode: "CLAMP_TO_GROUND",
+            extruded: false,
+          });
+
+          mapRef.current!.append(marker);
+          markersRef.current.push(marker);
+        } catch (error) {
+          console.error("Failed to create marker:", error);
+        }
+      });
+    } catch (error) {
+      console.error("Failed to sync markers:", error);
+    }
+  }, [markers, apiIsLoaded]);
+
+  // Initialize map when API is loaded
   useEffect(() => {
     if (!apiIsLoaded) return;
 
     initializeMap();
 
     return () => {
-      // Cleanup on unmount
+      // Cleanup markers first
+      markersRef.current.forEach((marker) => {
+        try {
+          marker.remove();
+        } catch (error) {
+          console.warn("Error removing marker on cleanup:", error);
+        }
+      });
+      markersRef.current = [];
+
+      // Cleanup map
       if (mapRef.current && containerRef.current) {
-        containerRef.current.removeChild(mapRef.current);
+        try {
+          containerRef.current.removeChild(mapRef.current);
+        } catch (error) {
+          console.warn("Error removing map on cleanup:", error);
+        }
         mapRef.current = null;
       }
     };
@@ -86,6 +146,11 @@ export function Map3D({
     mapRef.current.heading = heading;
     mapRef.current.range = range;
   }, [center.lat, center.lng, center.altitude, tilt, heading, range]);
+
+  // Sync markers when markers prop changes
+  useEffect(() => {
+    syncMarkers();
+  }, [syncMarkers]);
 
   if (!apiIsLoaded) {
     return (

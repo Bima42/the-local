@@ -33,6 +33,7 @@ export interface Map3DCameraProps {
  */
 export interface Map3DProps extends Map3DCameraProps {
   mode?: "HYBRID" | "SATELLITE";
+  markers?: MapPosition[];
   className?: string;
 }
 
@@ -50,6 +51,16 @@ declare global {
         tilt: number;
         heading: number;
         mode: string;
+        append(element: Marker3DElement): void;
+      }
+
+      class Marker3DElement extends HTMLElement {
+        constructor(options?: Marker3DElementOptions);
+        position: LatLngAltitudeLiteral | null;
+        altitudeMode: string;
+        extruded: boolean;
+        label: string;
+        remove(): void;
       }
 
       interface Map3DElementOptions {
@@ -61,11 +72,25 @@ declare global {
         gestureHandling?: string;
       }
 
+      interface Marker3DElementOptions {
+        position: LatLngAltitudeLiteral;
+        altitudeMode?: "ABSOLUTE" | "CLAMP_TO_GROUND";
+        extruded?: boolean;
+        label?: string;
+      }
+
       interface LatLngAltitudeLiteral {
         lat: number;
         lng: number;
         altitude?: number;
       }
     }
+
+    function importLibrary(
+      name: "maps3d"
+    ): Promise<{
+      Map3DElement: typeof google.maps.maps3d.Map3DElement;
+      Marker3DElement: typeof google.maps.maps3d.Marker3DElement;
+    }>;
   }
 }
