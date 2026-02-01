@@ -22,7 +22,7 @@ export function SessionView({
   sessionTitle,
   initialPainPoints,
 }: Props) {
-  const { setSession, setLoading, selectedPinId, selectPin, setHistory, addHistorySlot } = useSessionStore((state) => state);
+  const { setSession, setLoading, selectedPinId, selectPin, setHistory, addHistorySlot, predefinedPainPoints } = useSessionStore((state) => state);
   
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -44,9 +44,13 @@ export function SessionView({
 
   const { data: history } = api.session.getHistory.useQuery({ sessionId });
 
-  const createHistorySlotMutation = api.session.createHistorySlot.useMutation({
-    onSuccess: (newSlot) => {
-      addHistorySlot(newSlot);
+  const processMessageMutation = api.ai.processMessage.useMutation({
+    onSuccess: ({ session: updatedSession, historySlot }) => {
+      if (updatedSession) {
+        setSession(updatedSession);
+      }
+      addHistorySlot(historySlot);
+      setNotes(historySlot.notes ?? "");
     },
   });
 
@@ -87,10 +91,10 @@ export function SessionView({
     
     if (!input.trim()) return;
 
-    createHistorySlotMutation.mutate({
+    processMessageMutation.mutate({
       sessionId,
       userMessage: input,
-      notes: notes || undefined,
+      predefinedPoints: predefinedPainPoints,
     });
 
     setInput("");
@@ -128,7 +132,7 @@ export function SessionView({
               <MessageInput
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                isGenerating={createHistorySlotMutation.isPending}
+                isGenerating={processMessageMutation.isPending}
                 transcribeAudio={transcribeAudio}
                 submitOnEnter={true}
               />

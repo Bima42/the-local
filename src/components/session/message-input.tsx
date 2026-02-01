@@ -9,6 +9,7 @@ import { useAudioRecording } from "@/hooks/use-audio-recording";
 import { useAutosizeTextArea } from "@/hooks/use-autosize-textarea";
 import { AudioVisualizer } from "@/components/session/audio-visualizer";
 import { TranscribingShimmer } from "@/components/session/transcribing-shimmer";
+import { AiThinkingShimmer } from "@/components/session/ai-thinking-shimmer";
 import { Button } from "@/components/ui/button";
 import { InterruptPrompt } from "@/components/ui/interrupt-prompt";
 
@@ -162,6 +163,7 @@ export function MessageInput({
       <RecordingControls
         isRecording={isRecording}
         isTranscribing={isTranscribing}
+        isGenerating={isGenerating}
         audioStream={audioStream}
         textAreaHeight={textAreaHeight}
         onStopRecording={stopRecording}
@@ -207,6 +209,7 @@ function RecordingPrompt({ isVisible, onStopRecording }: RecordingPromptProps) {
 interface RecordingControlsProps {
   isRecording: boolean;
   isTranscribing: boolean;
+  isGenerating: boolean;
   audioStream: MediaStream | null;
   textAreaHeight: number;
   onStopRecording: () => void;
@@ -215,6 +218,7 @@ interface RecordingControlsProps {
 function RecordingControls({
   isRecording,
   isTranscribing,
+  isGenerating,
   audioStream,
   textAreaHeight,
   onStopRecording,
@@ -241,6 +245,17 @@ function RecordingControls({
         style={{ height: textAreaHeight - 2 }}
       >
         <TranscribingShimmer />
+      </div>
+    );
+  }
+
+  if (isGenerating) {
+    return (
+      <div
+        className="absolute inset-[1px] z-50 overflow-hidden rounded-xl"
+        style={{ height: textAreaHeight - 2 }}
+      >
+        <AiThinkingShimmer />
       </div>
     );
   }
