@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { painPoints, type PainType } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { eq, isNotNull, isNull, and } from "drizzle-orm";
 import type { PainPointUpdate } from "@/types/TSessionUpdate";
 import type { PredefinedPainPoint } from "@/types/TPainPoint";
 
@@ -12,6 +12,7 @@ export const PainPointService = {
     type?: PainType;
     notes?: string;
     rating?: number;
+    meshName?: string; // null for user-placed
   }) {
     const [point] = await db
       .insert(painPoints)
@@ -20,6 +21,7 @@ export const PainPointService = {
         posX: data.position.x,
         posY: data.position.y,
         posZ: data.position.z,
+        meshName: data.meshName ?? null,
         label: data.label ?? "",
         type: data.type ?? "other",
         notes: data.notes,
@@ -51,20 +53,55 @@ export const PainPointService = {
     return { success: true };
   },
 
+  /**
+   * Delete only AI-placed points (meshName is not null)
+   */
+  async deleteAIPoints(sessionId: string) {
+    await db
+      .delete(painPoints)
+      .where(
+        and(
+          eq(painPoints.sessionId, sessionId),
+          isNotNull(painPoints.meshName)
+        )
+      );
+  },
+
+  /**
+   * Delete only user-placed points (meshName is null)
+   */
+  async deleteUserPoints(sessionId: string) {
+    await db
+      .delete(painPoints)
+      .where(
+        and(
+          eq(painPoints.sessionId, sessionId),
+          isNull(painPoints.meshName)
+        )
+      );
+  },
+
+  /**
+   * Delete all points (both user and AI)
+   */
   async deleteAll(sessionId: string) {
     await db.delete(painPoints).where(eq(painPoints.sessionId, sessionId));
   },
 
-  async bulkInsert(points: Array<{
-    sessionId: string;
-    posX: number;
-    posY: number;
-    posZ: number;
-    label: string;
-    type: PainType;
-    notes: string | null;
-    rating: number;
-  }>) {
+  async bulkInsert(
+    points: Array<{
+      sessionId: string;
+      posX: number;
+      posY: number;
+      posZ: number;
+      meshName: string;
+      label: string;
+      type: PainType;
+      notes: string | null;
+      rating: number;
+    }>
+  ) {
+    if (points.length === 0) return;
     await db.insert(painPoints).values(points);
   },
 
@@ -74,6 +111,9 @@ export const PainPointService = {
     });
   },
 
+  /**
+   * Resolve mesh names to coordinates for AI-placed points
+   */
   resolveMeshNames(
     aiPoints: PainPointUpdate[],
     predefinedPoints: PredefinedPainPoint[],
@@ -90,6 +130,7 @@ export const PainPointService = {
         posX: predefined.position[0],
         posY: predefined.position[1],
         posZ: predefined.position[2],
+        meshName: point.meshName, // Store mesh reference
         label: point.label,
         type: point.type,
         notes: point.notes ?? null,

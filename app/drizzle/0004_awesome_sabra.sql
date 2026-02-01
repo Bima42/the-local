@@ -1,0 +1,1 @@
+ALTER TABLE "pain_points" ADD COLUMN "mesh_name" text;
