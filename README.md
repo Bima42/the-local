@@ -1,14 +1,11 @@
 # Healthspector
 ## Final grade
+__31.01.2026 - 01.02.2026__
 The project got the #25th place out of 105 submissions.
 We are very proud concidering the size of our team and the failed start.
 ![ranking](<Screenshot 2026-02-01 at 18.19.07.png>)
 
 ---
-![Cursor 2-Day AI Hackathon](https://ai-beavers.com/_next/image?url=%2Fimages%2Fhackathon-hero-20012026.png&w=1920&q=75)
-
-> AI-powered pain mapping tool that helps patients communicate symptoms to doctors through interactive 3D body visualization
-
 **Context**: This project was born from a pivot. After spending 10 hours on a failed project ([read the post-mortem](./docs/THE_FAIL.md)), we had 14 hours left to ship something. Healthspector is what happens when you learn fast and execute faster.
 
 ---
@@ -199,3 +196,8 @@ Making an LLM interact with a 3D model could have been a project killer.
 [Click the link!](https://hamburg-hackathon.tanguypauvret.me/)
 
 **Note**: This is a hackathon POC. The 3D model has limited body zones, the AI occasionally hallucinates pain points, and the UI is rough. But it works, and it demonstrates the core concept.
+
+
+---
+
+![Cursor 2-Day AI Hackathon](https://ai-beavers.com/_next/image?url=%2Fimages%2Fhackathon-hero-20012026.png&w=1920&q=75)
