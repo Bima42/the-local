@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { z, type ZodType } from "zod";
-import { env } from "../../config/env";
+import { env } from "@/config/env";
+import { logLLMRequest } from "./logger";
 
 export async function llmInvoke<T>(
   prompt: string,
@@ -47,10 +48,21 @@ export async function llmInvoke<T>(
     }
 
     const parsed = JSON.parse(content);
-    
-    return schema.parse(parsed);
+    const validated = schema.parse(parsed);
+
+    await logLLMRequest(systemMessage, prompt, content, null);
+
+    return validated;
   } catch (error) {
     console.error("[LLM] Error:", error);
+
+    await logLLMRequest(
+      systemMessage,
+      prompt,
+      null,
+      error instanceof Error ? error : new Error(String(error))
+    );
+
     throw error;
   }
 }
