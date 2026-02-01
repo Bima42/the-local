@@ -54,3 +54,14 @@
         -   `isEditDialogOpen` et `editingPinId` : Gestion de l'édition de pins (existants)
     -   **Fonction `handleTestAddPin` :** Modifie `targetMesh` pour déclencher la logique d'ajout automatique dans `HumanModel`
     -   **Props passées au `BodyViewer` :** Ajout de `targetMesh` et `setTargetMesh` pour connecter le bouton de test à la logique 3D
+
+### ✅ **Phase 3 : Amélioration de l'ergonomie de l'interface**
+
+-   **Simplification du panel gauche :**
+    -   **Retrait du titre "Points Registered"** et de la bordure de séparation dans `pin-list-panel.tsx`
+    -   Conservation du bouton de test uniquement dans le header
+
+-   **Ajout d'instructions utilisateur :**
+    -   **Texte d'instruction discret** ajouté en haut du body viewer dans `session-view.tsx`
+    -   Positionnement centré avec `text-muted-foreground/60` pour faible visibilité
+    -   Message : "Click on the body to mark where you feel pain. You can rotate the model by dragging."

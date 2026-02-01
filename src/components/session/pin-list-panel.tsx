@@ -29,24 +29,19 @@ export function PinListPanel({ sessionId, onPinClick, onTestAddPin }: Props) {
 
   return (
     <div className="w-80 border-r flex flex-col bg-background">
-      {/* Header */}
-      <div className="p-4 border-b">
-        <h2 className="text-sm font-semibold text-muted-foreground">
-          {t("pointsRegistered")} ({painPoints.length})
-        </h2>
-        
-        {/* Test button */}
-        {onTestAddPin && (
+      {/* Header - Only test button */}
+      {onTestAddPin && (
+        <div className="p-4">
           <Button
             variant="outline"
             size="sm"
-            className="mt-2 w-full"
+            className="w-full"
             onClick={() => onTestAddPin("hand-right")}
           >
             Add pin on right hand
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-2">

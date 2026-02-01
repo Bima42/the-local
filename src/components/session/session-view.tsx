@@ -53,6 +53,13 @@ export function SessionView({
 
         {/* Center - 3D Viewer with MessageInput */}
         <div className="flex-1 relative">
+          {/* Instruction text */}
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 text-center">
+            <p className="text-sm text-muted-foreground/60 max-w-md px-4">
+              Click on the body to mark where you feel pain. You can rotate the model by dragging.
+            </p>
+          </div>
+
           <BodyViewer
             sessionId={sessionId}
             initialPainPoints={initialPainPoints}
@@ -81,6 +88,7 @@ export function SessionView({
           </div>
         </div>
 
+        {/* Right panel - Notes */}
         <div className="w-80 border-l flex flex-col bg-background">
           <Textarea
             placeholder="Describe what's wrong..."
