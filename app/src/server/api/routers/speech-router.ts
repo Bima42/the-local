@@ -1,11 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { ElevenLabsClient } from "elevenlabs";
-import { env } from "../../../config/env";
-
-const elevenlabs = new ElevenLabsClient({
-  apiKey: env.ELEVENLABS_API_KEY,
-});
+import { getElevenLabsClient } from "@/lib/elevenlabs";
 
 export const speechRouter = createTRPCRouter({
   transcribe: publicProcedure
@@ -26,7 +21,7 @@ export const speechRouter = createTRPCRouter({
 
         console.log("[Speech-to-Text] Transcribing audio...");
 
-        const transcription = await elevenlabs.speechToText.convert({
+        const transcription = await getElevenLabsClient().speechToText.convert({
           file: audioBlob,
           model_id: "scribe_v2",
         });
