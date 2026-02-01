@@ -91,6 +91,9 @@ export function SessionView({
       setNotes(historySlot.notes ?? "");
       setNotesDirty(false);
     },
+    onSettled: () => {
+      utils.suggestions.getBySessionId.invalidate({ sessionId });
+    },
   });
 
   const saveNotesMutation = api.session.createHistorySlot.useMutation({
