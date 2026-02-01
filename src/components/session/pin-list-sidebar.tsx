@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { api } from "@/lib/trpc/client";
 import {
   Sidebar,
@@ -21,6 +22,9 @@ interface Props {
 }
 
 export function PinListSidebar({ sessionId, children, onPinClick }: Props) {
+  const t = useTranslations("session");
+  const tTypes = useTranslations("painTypes");
+
   const { data: session } = api.session.getById.useQuery({ id: sessionId });
 
   const painPoints = session?.painPoints ?? [];
@@ -37,22 +41,24 @@ export function PinListSidebar({ sessionId, children, onPinClick }: Props) {
 
       <Sidebar side="right">
         <SidebarHeader>
-          <h2 className="px-4 py-2 text-lg font-semibold">Points de douleur</h2>
+          <h2 className="px-4 py-2 text-lg font-semibold">
+            {t("clickToAdd").split(" pour ")[0]}
+          </h2>
         </SidebarHeader>
 
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel>
-              Points enregistrés ({painPoints.length})
+              {t("pointsRegistered")} ({painPoints.length})
             </SidebarGroupLabel>
             <SidebarGroupContent>
               {painPoints.length === 0 ? (
                 <div className="px-4 py-3 text-sm text-muted-foreground text-center">
-                  Cliquez sur le modèle 3D pour ajouter un point de douleur
+                  {t("clickToAdd")}
                 </div>
               ) : (
                 <div className="space-y-2 px-2">
-                  {painPoints.map((point, index) => (
+                  {painPoints.map((point) => (
                     <button
                       key={point.id}
                       onClick={() => onPinClick(point.id)}
@@ -63,8 +69,11 @@ export function PinListSidebar({ sessionId, children, onPinClick }: Props) {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="font-medium text-sm truncate">
-                              {point.label || `Point ${index + 1}`}
+                              {point.label}
                             </h3>
+                            <h4 className="font-medium text-sm truncate">
+                              {tTypes(point.type)}
+                            </h4>
                             <Badge
                               className={`${getRatingBadgeColor(point.rating)} text-xs px-2 py-0 flex-shrink-0`}
                             >

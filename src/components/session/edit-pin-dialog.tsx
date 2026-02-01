@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -24,8 +25,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { api } from "@/lib/trpc/client";
 import { useSessionStore } from "@/lib/stores/session-store";
+import type { PainType } from "@/server/db/schema";
 
 interface EditPinDialogProps {
   open: boolean;
@@ -34,12 +43,27 @@ interface EditPinDialogProps {
   painPointId: string | null;
 }
 
+const painTypeKeys: PainType[] = [
+  "sharp",
+  "dull",
+  "burning",
+  "tingling",
+  "throbbing",
+  "cramping",
+  "shooting",
+  "other",
+];
+
 export function EditPinDialog({
   open,
   onOpenChange,
   sessionId,
   painPointId,
 }: EditPinDialogProps) {
+  const t = useTranslations("painDialog");
+  const tTypes = useTranslations("painTypes");
+
+  const [type, setType] = useState<PainType>("other");
   const [label, setLabel] = useState("");
   const [notes, setNotes] = useState("");
   const [rating, setRating] = useState([5]);
@@ -58,6 +82,7 @@ export function EditPinDialog({
   useEffect(() => {
     if (point) {
       setLabel(point.label ?? "");
+      setType(point.type);
       setNotes(point.notes ?? "");
       setRating([point.rating ?? 5]);
     }
@@ -84,7 +109,8 @@ export function EditPinDialog({
 
     updateMutation.mutate({
       id: painPointId,
-      label: label || "Point de douleur",
+      label: label || "",
+      type,
       notes,
       rating: rating[0] ?? 5,
     });
@@ -110,13 +136,27 @@ export function EditPinDialog({
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSubmit}>
             <DialogHeader>
-              <DialogTitle>Modifier le point de douleur</DialogTitle>
-              <DialogDescription>
-                Mise à jour de la description et de l&apos;intensité.
-              </DialogDescription>
+              <DialogTitle>{t("editTitle")}</DialogTitle>
+              <DialogDescription>{t("editDescription")}</DialogDescription>
             </DialogHeader>
 
             <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="edit-type">{t("typeLabel")}</Label>
+                <Select value={type} onValueChange={(v) => setType(v as PainType)}>
+                  <SelectTrigger id="edit-type">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {painTypeKeys.map((key) => (
+                      <SelectItem key={key} value={key}>
+                        {tTypes(key)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="grid gap-2">
                 <Label htmlFor="edit-label">Titre</Label>
                 <Input
@@ -126,21 +166,21 @@ export function EditPinDialog({
                   placeholder="Ex: Douleur au dos"
                 />
               </div>
-
+              
               <div className="grid gap-2">
-                <Label htmlFor="edit-notes">Description</Label>
+                <Label htmlFor="edit-notes">{t("notesLabel")}</Label>
                 <Textarea
                   id="edit-notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Notes additionnelles..."
+                  placeholder={t("editDescription")}
                   className="min-h-[100px]"
                 />
               </div>
 
               <div className="grid gap-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="edit-rating">Intensité de la douleur</Label>
+                  <Label htmlFor="edit-rating">{t("intensityLabel")}</Label>
                   <span
                     className={`text-2xl font-bold ${getRatingColor(rating[0] ?? 5)}`}
                   >
@@ -156,14 +196,14 @@ export function EditPinDialog({
                   onValueChange={setRating}
                 />
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Aucune douleur (0)</span>
-                  <span>Douleur maximale (10)</span>
+                  <span>{t("intensityMin")}</span>
+                  <span>{t("intensityMax")}</span>
                 </div>
               </div>
 
               <div className="text-xs text-muted-foreground">
-                Créé le{" "}
-                {new Date(point.createdAt).toLocaleDateString("fr-FR", {
+                {t("createdAt")}{" "}
+                {new Date(point.createdAt).toLocaleDateString(undefined, {
                   day: "numeric",
                   month: "long",
                   year: "numeric",
@@ -181,7 +221,7 @@ export function EditPinDialog({
                 disabled={updateMutation.isPending || deleteMutation.isPending}
                 className="sm:mr-auto"
               >
-                Supprimer
+                {t("delete")}
               </Button>
               <div className="flex gap-2">
                 <Button
@@ -190,15 +230,13 @@ export function EditPinDialog({
                   onClick={() => onOpenChange(false)}
                   disabled={updateMutation.isPending || deleteMutation.isPending}
                 >
-                  Annuler
+                  {t("cancel")}
                 </Button>
                 <Button
                   type="submit"
                   disabled={updateMutation.isPending || deleteMutation.isPending}
                 >
-                  {updateMutation.isPending
-                    ? "Enregistrement..."
-                    : "Enregistrer"}
+                  {updateMutation.isPending ? t("saving") : t("save")}
                 </Button>
               </div>
             </DialogFooter>
@@ -209,19 +247,18 @@ export function EditPinDialog({
       <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+            <AlertDialogTitle>{t("deleteConfirmTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Cette action est irréversible. Le point de douleur sera
-              définitivement supprimé.
+              {t("deleteConfirmDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Supprimer
+              {t("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

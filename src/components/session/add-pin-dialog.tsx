@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +15,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { api } from "@/lib/trpc/client";
+import type { PainType } from "@/server/db/schema";
 
 interface AddPinDialogProps {
   open: boolean;
@@ -23,13 +32,28 @@ interface AddPinDialogProps {
   position: { x: number; y: number; z: number } | null;
 }
 
+const painTypeKeys: PainType[] = [
+  "sharp",
+  "dull",
+  "burning",
+  "tingling",
+  "throbbing",
+  "cramping",
+  "shooting",
+  "other",
+];
+
 export function AddPinDialog({
   open,
   onOpenChange,
   sessionId,
   position,
 }: AddPinDialogProps) {
+  const t = useTranslations("painDialog");
+  const tTypes = useTranslations("painTypes");
+
   const [label, setLabel] = useState("");
+  const [type, setType] = useState<PainType>("other");
   const [notes, setNotes] = useState("");
   const [rating, setRating] = useState([5]);
 
@@ -49,7 +73,8 @@ export function AddPinDialog({
     addPainMutation.mutate({
       sessionId,
       position,
-      label: label || "Point de douleur",
+      label: label || "",
+      type,
       notes,
       rating: rating[0] ?? 5,
     });
@@ -57,6 +82,7 @@ export function AddPinDialog({
 
   const handleClose = () => {
     setLabel("");
+    setType("other");
     setNotes("");
     setRating([5]);
     onOpenChange(false);
@@ -73,13 +99,27 @@ export function AddPinDialog({
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Ajouter un point de douleur</DialogTitle>
-            <DialogDescription>
-              Décrivez la douleur et évaluez son intensité.
-            </DialogDescription>
+            <DialogTitle>{t("addTitle")}</DialogTitle>
+            <DialogDescription>{t("addDescription")}</DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="type">{t("typeLabel")}</Label>
+              <Select value={type} onValueChange={(v) => setType(v as PainType)}>
+                <SelectTrigger id="type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {painTypeKeys.map((key) => (
+                    <SelectItem key={key} value={key}>
+                      {tTypes(key)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="grid gap-2">
               <Label htmlFor="label">Titre</Label>
               <Input
@@ -90,21 +130,21 @@ export function AddPinDialog({
                 autoFocus
               />
             </div>
-
+            
             <div className="grid gap-2">
-              <Label htmlFor="notes">Description</Label>
+              <Label htmlFor="notes">{t("notesLabel")}</Label>
               <Textarea
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Notes additionnelles..."
+                placeholder={t("addDescription")}
                 className="min-h-[100px]"
               />
             </div>
 
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="rating">Intensité de la douleur</Label>
+                <Label htmlFor="rating">{t("intensityLabel")}</Label>
                 <span
                   className={`text-2xl font-bold ${getRatingColor(rating[0] ?? 5)}`}
                 >
@@ -120,8 +160,8 @@ export function AddPinDialog({
                 onValueChange={setRating}
               />
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Aucune douleur (0)</span>
-                <span>Douleur maximale (10)</span>
+                <span>{t("intensityMin")}</span>
+                <span>{t("intensityMax")}</span>
               </div>
             </div>
           </div>
@@ -133,10 +173,10 @@ export function AddPinDialog({
               onClick={handleClose}
               disabled={addPainMutation.isPending}
             >
-              Annuler
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={addPainMutation.isPending}>
-              {addPainMutation.isPending ? "Enregistrement..." : "Ajouter"}
+              {addPainMutation.isPending ? t("saving") : t("add")}
             </Button>
           </DialogFooter>
         </form>

@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { sessions, painPoints } from "@/server/db/schema";
+import { sessions, painPoints, painTypeEnum } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
+
+const painTypeSchema = z.enum(painTypeEnum.enumValues);
 
 export const sessionRouter = createTRPCRouter({
   create: publicProcedure
@@ -36,6 +38,7 @@ export const sessionRouter = createTRPCRouter({
           z: z.number(),
         }),
         label: z.string().default(""),
+        type: painTypeSchema.default("other"),
         notes: z.string().optional(),
         rating: z.number().int().min(0).max(10).default(5),
       }),
@@ -49,6 +52,7 @@ export const sessionRouter = createTRPCRouter({
           posY: input.position.y,
           posZ: input.position.z,
           label: input.label,
+          type: input.type,
           notes: input.notes,
           rating: input.rating,
         })
@@ -61,6 +65,7 @@ export const sessionRouter = createTRPCRouter({
       z.object({
         id: z.string().uuid(),
         label: z.string().optional(),
+        type: painTypeSchema.optional(),
         notes: z.string().optional(),
         rating: z.number().int().min(0).max(10).optional(),
       }),

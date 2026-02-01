@@ -1,20 +1,49 @@
 {
-    "Hero": {
-      "title": "Beaverly Health",
-      "subtitle": "Votre corps, cartographié.",
-      "description": "Suivez, visualisez et partagez ce que vous ressentez — pour que les bonnes personnes puissent vous aider.",
-      "cta": "Commencer une session"
-    },
-    "LanguageSwitcher": {
-      "changeLanguage": "Langue"
-    },
-    "session": {
-      "new": "Nouvelle session",
-      "create": "Commencer",
-      "title": "Titre de la session",
-      "clickToAdd": "Cliquez sur le modèle pour ajouter un point",
-      "labelPlaceholder": "Label de la douleur",
-      "notesPlaceholder": "Notes additionnelles...",
-      "delete": "Supprimer"
-    }
+  "Hero": {
+    "title": "Beaverly Health",
+    "subtitle": "Votre corps, cartographié.",
+    "description": "Suivez, visualisez et partagez ce que vous ressentez — pour que les bonnes personnes puissent vous aider.",
+    "cta": "Commencer une session"
+  },
+  "LanguageSwitcher": {
+    "changeLanguage": "Langue"
+  },
+  "session": {
+    "new": "Nouvelle session",
+    "create": "Commencer",
+    "title": "Titre de la session",
+    "clickToAdd": "Cliquez sur le modèle pour ajouter un point",
+    "notesPlaceholder": "Notes additionnelles...",
+    "delete": "Supprimer",
+    "pointsRegistered": "Points enregistrés"
+  },
+  "painTypes": {
+    "sharp": "Aiguë (coup de couteau)",
+    "dull": "Sourde (persistante)",
+    "burning": "Brûlante",
+    "tingling": "Picotements (engourdissement)",
+    "throbbing": "Pulsatile (lancinante)",
+    "cramping": "Crampe (spasme)",
+    "shooting": "Fulgurante (électrique)",
+    "other": "Autre"
+  },
+  "painDialog": {
+    "addTitle": "Ajouter un point de douleur",
+    "addDescription": "Décrivez la douleur et évaluez son intensité.",
+    "editTitle": "Modifier le point de douleur",
+    "editDescription": "Mise à jour de la description et de l'intensité.",
+    "typeLabel": "Type de douleur",
+    "notesLabel": "Description",
+    "intensityLabel": "Intensité de la douleur",
+    "intensityMin": "Aucune douleur (0)",
+    "intensityMax": "Douleur maximale (10)",
+    "cancel": "Annuler",
+    "add": "Ajouter",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "delete": "Supprimer",
+    "createdAt": "Créé le",
+    "deleteConfirmTitle": "Êtes-vous sûr ?",
+    "deleteConfirmDescription": "Cette action est irréversible. Le point de douleur sera définitivement supprimé."
   }
+}

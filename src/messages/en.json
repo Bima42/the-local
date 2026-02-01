@@ -1,20 +1,49 @@
 {
-    "Hero": {
-      "title": "Beaverly Health",
-      "subtitle": "Your body, mapped.",
-      "description": "Track, visualize, and share what you feel — so the right people can help.",
-      "cta": "Start a session"
-    },
-    "LanguageSwitcher": {
-      "changeLanguage": "Language"
-    },
-    "session": {
-      "new": "New session",
-      "create": "Start",
-      "title": "Session title",
-      "clickToAdd": "Click on the model to add a point",
-      "labelPlaceholder": "Pain label",
-      "notesPlaceholder": "Additional notes...",
-      "delete": "Delete"
-    }
+  "Hero": {
+    "title": "Beaverly Health",
+    "subtitle": "Your body, mapped.",
+    "description": "Track, visualize, and share what you feel — so the right people can help.",
+    "cta": "Start a session"
+  },
+  "LanguageSwitcher": {
+    "changeLanguage": "Language"
+  },
+  "session": {
+    "new": "New session",
+    "create": "Start",
+    "title": "Session title",
+    "clickToAdd": "Click on the model to add a point",
+    "notesPlaceholder": "Additional notes...",
+    "delete": "Delete",
+    "pointsRegistered": "Points registered"
+  },
+  "painTypes": {
+    "sharp": "Sharp (stabbing)",
+    "dull": "Dull (aching)",
+    "burning": "Burning",
+    "tingling": "Tingling (numbness)",
+    "throbbing": "Throbbing (pulsating)",
+    "cramping": "Cramping (spasm)",
+    "shooting": "Shooting (electric)",
+    "other": "Other"
+  },
+  "painDialog": {
+    "addTitle": "Add pain point",
+    "addDescription": "Describe the pain and rate its intensity.",
+    "editTitle": "Edit pain point",
+    "editDescription": "Update description and intensity.",
+    "typeLabel": "Pain type",
+    "notesLabel": "Description",
+    "intensityLabel": "Pain intensity",
+    "intensityMin": "No pain (0)",
+    "intensityMax": "Maximum pain (10)",
+    "cancel": "Cancel",
+    "add": "Add",
+    "save": "Save",
+    "saving": "Saving...",
+    "delete": "Delete",
+    "createdAt": "Created on",
+    "deleteConfirmTitle": "Are you sure?",
+    "deleteConfirmDescription": "This action is irreversible. The pain point will be permanently deleted."
   }
+}
