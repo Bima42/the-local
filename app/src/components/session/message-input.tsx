@@ -128,7 +128,7 @@ export function MessageInput({
         {isSpeechSupported && (
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             className={cn("h-8 w-8", isListening && "text-primary")}
             aria-label="Voice input"
             size="icon"

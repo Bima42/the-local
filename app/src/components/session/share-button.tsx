@@ -56,11 +56,11 @@ export function ShareButton({ sessionId }: Props) {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
+  
   return (
     <>
       <Button
-        variant="outline"
+        variant="ghost"
         size="icon"
         onClick={() => setOpen(true)}
         title="Share session"

@@ -38,7 +38,8 @@ export function PinListPanel({ onPinClick, readOnly = false }: Props) {
               <div
                 key={point.id}
                 className={cn(
-                  "p-3 transition-colors duration-200 cursor-pointer hover:bg-accent/50",
+                  "p-3 rounded-lg transition-all duration-200",
+                  "bg-card shadow-sm",
                   !readOnly && "cursor-pointer hover:shadow-md hover:bg-accent/5"
                 )}
                 onClick={readOnly ? undefined : () => onPinClick(point.id)}
