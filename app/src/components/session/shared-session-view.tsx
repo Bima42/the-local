@@ -5,12 +5,9 @@ import { BodyViewer } from "./body-viewer";
 import { PinListPanel } from "./pin-list-panel";
 import { ViewPinDialog } from "./view-pin-dialog";
 import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
 import { api } from "../../lib/trpc/client";
 import { useSessionStore } from "../../providers/store-provider";
 import type { PainPoint } from "../../types/TPainPoint";
-import { Home } from "lucide-react";
-import Link from "next/link";
 
 interface Props {
   token: string;
@@ -26,19 +23,11 @@ export function SharedSessionView({
   const { setSession, setLoading, setHistory } = useSessionStore((state) => state);
 
   const { data: session, isLoading } = api.session.getByShareToken.useQuery(
-    { token },
-    {
-      initialData: {
-        id: "",
-        title: sessionTitle,
-        painPoints: initialPainPoints,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    }
+    { token }
   );
 
   const sessionId = session?.id ?? "";
+  
   const { data: history } = api.session.getHistory.useQuery(
     { sessionId },
     { enabled: !!sessionId }
@@ -66,21 +55,25 @@ export function SharedSessionView({
 
   const latestNotes = history?.[history.length - 1]?.notes ?? "";
 
+  if (isLoading || !session) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p className="text-sm text-muted-foreground">Loading session...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen flex flex-col">
       <header className="px-4 py-3 bg-background/80 backdrop-blur-md z-10 flex items-center justify-between shadow-sm">
-        
         <h1 className="text-sm font-medium text-muted-foreground">
-          {sessionTitle} <span className="text-xs">(Read-only)</span>
+          {session.title} <span className="text-xs">(Read-only)</span>
         </h1>
-        
         <div className="w-8" />
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <PinListPanel
-          onPinClick={handlePinClick}
-        />
+        <PinListPanel onPinClick={handlePinClick} />
 
         <div className="flex-1 relative">
           <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 text-center">
@@ -110,6 +103,7 @@ export function SharedSessionView({
           />
         </div>
       </div>
+
       <ViewPinDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

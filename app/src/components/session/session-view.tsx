@@ -91,12 +91,19 @@ export function SessionView({
   const saveNotesMutation = api.session.createHistorySlot.useMutation({
     onSuccess: (slot) => {
       addHistorySlot(slot);
+      setNotes(slot.notes ?? "");
       setNotesDirty(false);
     },
     onSettled: () => utils.suggestions.getBySessionId.invalidate({ sessionId }),
   });
 
   const transcribeMutation = api.speech.transcribe.useMutation();
+
+  useEffect(() => {
+    if (history && history.length > 0) {
+      setNotes(history[history.length - 1]?.notes ?? "");
+    }
+  }, [history]);
 
   useEffect(() => {
     if (session) setSession(session);
@@ -106,20 +113,10 @@ export function SessionView({
     setLoading(isLoading);
   }, [isLoading, setLoading]);
 
-  useEffect(() => {
-    if (history) setHistory(history);
-  }, [history, setHistory]);
   
   useEffect(() => {
     if (suggestions) setSuggestions(suggestions);
   }, [suggestions, setSuggestions]);
-
-  useEffect(() => {
-    if (history && history.length > 0 && !notesDirty) {
-      const latestNotes = history[history.length - 1]?.notes ?? "";
-      setNotes(latestNotes);
-    }
-  }, [history, notesDirty]);
 
   const handlePinClick = (pinId: string) => {
     selectPin(pinId);
