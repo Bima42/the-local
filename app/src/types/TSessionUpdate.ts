@@ -2,7 +2,7 @@ import { z } from "zod";
 import { painTypeEnum } from "@/server/db/schema";
 
 export const painPointUpdateSchema = z.object({
-  meshName: z.string(),
+  meshName: z.string().optional(),
   label: z.string(),
   type: z.enum(painTypeEnum.enumValues),
   rating: z.number().int().min(0).max(10),

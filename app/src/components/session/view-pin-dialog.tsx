@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -32,63 +31,56 @@ export function ViewPinDialog({
   const point = session?.painPoints?.find((p) => p.id === painPointId);
 
   const getRatingColor = (value: number) => {
-    if (value <= 3) return "text-green-500";
-    if (value <= 6) return "text-yellow-500";
-    return "text-red-500";
+    if (value <= 3) return "text-green-600 dark:text-green-400";
+    if (value <= 6) return "text-yellow-600 dark:text-yellow-400";
+    return "text-red-600 dark:text-red-400";
+  };
+
+  const getBadgeColor = (value: number) => {
+    if (value <= 3) return "bg-green-500/10 text-green-700 dark:text-green-400";
+    if (value <= 6) return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400";
+    return "bg-red-500/10 text-red-700 dark:text-red-400";
   };
 
   if (!point) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] shadow-lg">
         <DialogHeader>
-          <DialogTitle>{point.label || t("editTitle")}</DialogTitle>
-          <DialogDescription>{t("editDescription")}</DialogDescription>
+          <DialogTitle className="text-lg">{point.label || "Pain point"}</DialogTitle>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-1">
-            <Label className="text-muted-foreground">{t("typeLabel")}</Label>
+        <div className="space-y-5 py-6">
+          <div className="space-y-1">
+            <Label className="text-sm font-medium text-muted-foreground">Type</Label>
             <p className="text-sm">{tTypes(point.type)}</p>
           </div>
 
           {point.notes && (
-            <div className="grid gap-1">
-              <Label className="text-muted-foreground">{t("notesLabel")}</Label>
-              <p className="text-sm whitespace-pre-wrap">{point.notes}</p>
+            <div className="space-y-1">
+              <Label className="text-sm font-medium text-muted-foreground">Notes</Label>
+              <p className="text-sm whitespace-pre-wrap leading-relaxed">{point.notes}</p>
             </div>
           )}
 
-          <div className="grid gap-1">
-            <Label className="text-muted-foreground">{t("intensityLabel")}</Label>
-            <div className="flex items-center gap-2">
-              <span className={`text-2xl font-bold ${getRatingColor(point.rating)}`}>
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-muted-foreground">Intensity</Label>
+            <div className="flex items-center gap-3">
+              <span className={`text-3xl font-bold tabular-nums ${getRatingColor(point.rating)}`}>
                 {point.rating}
               </span>
-              <Badge
-                className={`${
-                  point.rating <= 3
-                    ? "bg-green-500 text-white"
-                    : point.rating <= 6
-                      ? "bg-yellow-500 text-white"
-                      : "bg-red-500 text-white"
-                }`}
-              >
-                {point.rating <= 3
-                  ? t("intensityMin")
-                  : point.rating <= 6
-                    ? "Moderate"
-                    : t("intensityMax")}
+              <Badge className={getBadgeColor(point.rating)}>
+                {point.rating <= 3 ? "Mild" : point.rating <= 6 ? "Moderate" : "Severe"}
               </Badge>
             </div>
           </div>
 
-          <div className="text-xs text-muted-foreground">
-            {t("createdAt")}{" "}
+          <div className="text-xs text-muted-foreground pt-2">
+            Created{" "}
             {new Date(point.createdAt).toLocaleDateString(undefined, {
               day: "numeric",
-              month: "long",
+              month: "short",
               year: "numeric",
               hour: "2-digit",
               minute: "2-digit",
@@ -97,8 +89,8 @@ export function ViewPinDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t("cancel")}
+          <Button variant="ghost" onClick={() => onOpenChange(false)} className="shadow-sm">
+            Close
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -69,11 +69,6 @@ export function SharedSessionView({
   return (
     <div className="h-screen flex flex-col">
       <header className="px-4 py-3 bg-background/80 backdrop-blur-md z-10 flex items-center justify-between shadow-sm">
-        <Link href="/">
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Home className="h-4 w-4" />
-          </Button>
-        </Link>
         
         <h1 className="text-sm font-medium text-muted-foreground">
           {sessionTitle} <span className="text-xs">(Read-only)</span>
