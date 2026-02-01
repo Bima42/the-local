@@ -1,7 +1,7 @@
 import { db } from "@/server/db";
 import { painPoints, type PainType } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
-import type { AIPainPoint } from "@/types/TAISessionUpdate";
+import type { PainPointUpdate } from "@/types/TSessionUpdate";
 import type { PredefinedPainPoint } from "@/types/TPainPoint";
 
 export const PainPointService = {
@@ -75,7 +75,7 @@ export const PainPointService = {
   },
 
   resolveMeshNames(
-    aiPoints: AIPainPoint[],
+    aiPoints: PainPointUpdate[],
     predefinedPoints: PredefinedPainPoint[],
     sessionId: string
   ) {

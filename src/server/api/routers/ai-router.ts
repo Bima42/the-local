@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { buildSessionPrompt, SESSION_SYSTEM_MESSAGE } from "@/lib/llm/session-prompt";
+import { buildSessionPrompt } from "@/lib/llm/session-prompt-builder";
+import { SESSION_SYSTEM_MESSAGE } from "@/lib/llm/session-prompt";
 import { llmInvoke } from "@/lib/llm/llm";
-import { aiSessionUpdateSchema, type AISessionUpdate } from "@/types/TAISessionUpdate";
+import { sessionUpdateSchema, type SessionUpdate } from "@/types/TSessionUpdate";
 import { SessionService } from "@/server/services/session-service";
 import { PainPointService } from "@/server/services/pain-point-service";
 
@@ -37,22 +38,22 @@ export const aiRouter = createTRPCRouter({
         input.userMessage
       );
 
-      console.log("[AI] Input:\n", prompt);
+      console.log("[AI] Prompt built successfully");
 
-      const aiResponse = await llmInvoke<AISessionUpdate>(
+      const llmResponse = await llmInvoke<SessionUpdate>(
         prompt,
-        aiSessionUpdateSchema,
+        sessionUpdateSchema,
         SESSION_SYSTEM_MESSAGE
       );
 
-      console.log("[AI] Output:", JSON.stringify(aiResponse, null, 2));
+      console.log("[AI] Response received:", JSON.stringify(llmResponse, null, 2));
 
-      if (aiResponse.painPoints !== undefined) {
+      if (llmResponse.painPoints !== undefined) {
         await PainPointService.deleteAll(input.sessionId);
 
-        if (aiResponse.painPoints.length > 0) {
+        if (llmResponse.painPoints.length > 0) {
           const resolvedPoints = PainPointService.resolveMeshNames(
-            aiResponse.painPoints,
+            llmResponse.painPoints,
             input.predefinedPoints,
             input.sessionId
           );
@@ -64,7 +65,7 @@ export const aiRouter = createTRPCRouter({
       const historySlot = await SessionService.createHistorySlot(
         input.sessionId,
         input.userMessage,
-        aiResponse.notes ?? undefined
+        llmResponse.notes ?? undefined
       );
 
       const updatedSession = await SessionService.getById(input.sessionId);

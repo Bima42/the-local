@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { painTypeEnum } from "@/server/db/schema";
 
-export const aiPainPointSchema = z.object({
+export const painPointUpdateSchema = z.object({
   meshName: z.string().min(1),
   label: z.string().min(1),
   type: z.enum(painTypeEnum.enumValues),
@@ -9,10 +9,10 @@ export const aiPainPointSchema = z.object({
   rating: z.number().int().min(0).max(10),
 });
 
-export const aiSessionUpdateSchema = z.object({
+export const sessionUpdateSchema = z.object({
   notes: z.string().optional(),
-  painPoints: z.array(aiPainPointSchema).optional(),
+  painPoints: z.array(painPointUpdateSchema).optional(),
 });
 
-export type AIPainPoint = z.infer<typeof aiPainPointSchema>;
-export type AISessionUpdate = z.infer<typeof aiSessionUpdateSchema>;
+export type PainPointUpdate = z.infer<typeof painPointUpdateSchema>;
+export type SessionUpdate = z.infer<typeof sessionUpdateSchema>;
