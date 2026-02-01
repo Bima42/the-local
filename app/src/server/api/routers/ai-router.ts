@@ -30,11 +30,14 @@ export const aiRouter = createTRPCRouter({
         throw new Error("Session not found");
       }
 
+      // Get current pain points to pass to prompt builder
+      const currentPainPoints = await PainPointService.getBySessionId(input.sessionId);
       const historySlots = await SessionService.getHistory(input.sessionId);
 
       const prompt = buildSessionPrompt(
         input.predefinedPoints,
         historySlots,
+        currentPainPoints, // Pass current points for source info
         input.userMessage
       );
 
@@ -48,9 +51,17 @@ export const aiRouter = createTRPCRouter({
 
       console.log("[AI] Response received:", JSON.stringify(llmResponse, null, 2));
 
+      // Handle pain point updates
       if (llmResponse.painPoints !== undefined) {
-        await PainPointService.deleteAll(input.sessionId);
+        // Clear user points if explicitly requested
+        if (llmResponse.clearUserPoints) {
+          await PainPointService.deleteAll(input.sessionId);
+        } else {
+          // Default: only delete AI-placed points, preserve user points
+          await PainPointService.deleteAIPoints(input.sessionId);
+        }
 
+        // Insert new AI-placed points
         if (llmResponse.painPoints.length > 0) {
           const resolvedPoints = PainPointService.resolveMeshNames(
             llmResponse.painPoints,
