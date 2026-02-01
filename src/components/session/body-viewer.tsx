@@ -13,11 +13,18 @@ interface Props {
   sessionId: string;
   initialPainPoints: PainPoint[];
   onPinClick: (pinId: string) => void;
+  targetMesh: string | null;
+  setTargetMesh: (mesh: string | null) => void;
 }
 
-export function BodyViewer({ sessionId, initialPainPoints, onPinClick }: Props) {
+export function BodyViewer({ 
+  sessionId, 
+  initialPainPoints, 
+  onPinClick,
+  targetMesh,
+  setTargetMesh
+}: Props) {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [targetMesh, setTargetMesh] = useState<string | null>(null);
   const [pendingPosition, setPendingPosition] = useState<{
     x: number;
     y: number;
@@ -44,7 +51,7 @@ export function BodyViewer({ sessionId, initialPainPoints, onPinClick }: Props) 
 
   return (
     <>
-      <div className="flex-1">
+      <div className="absolute inset-0">
         <Canvas camera={{ position: [0, 1, 3], fov: 50 }}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />
@@ -67,13 +74,6 @@ export function BodyViewer({ sessionId, initialPainPoints, onPinClick }: Props) 
           <OrbitControls enablePan={false} minDistance={1.5} maxDistance={5} />
         </Canvas>
       </div>
-
-      <button
-        className="absolute top-4 left-4 z-10 rounded bg-white px-3 py-1 text-sm shadow"
-        onClick={() => setTargetMesh("hand-right")}
-      >
-        Add pin on right hand
-      </button>
 
       <AddPinDialog
         open={isAddDialogOpen}
